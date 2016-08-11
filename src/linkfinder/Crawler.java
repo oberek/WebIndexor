@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -40,11 +41,13 @@ public class Crawler implements VisitAction{
             counter++;
         }
     }
-
+    
+    //HERE GOES
     @Override
     public Iterator<URL> visitUrl(URL url) {
         String html = null;
         Iterator iterator = null;
+        Iterator wordIterator = null;
         try {
             html = getContent(url);
         } catch (IOException ex) {
@@ -52,6 +55,7 @@ public class Crawler implements VisitAction{
         }
         
         try {
+            wordIterator = getWords(html);
             iterator = getLinks(html);
         } catch (IOException ex) {
             System.err.println(ex);
@@ -103,5 +107,18 @@ public class Crawler implements VisitAction{
         
         Iterator ir = links.iterator();
         return ir;
+    }
+
+    private Iterator<String> getWords(String html) {
+        Iterator it = null;
+        String htmlCopy = null;
+        
+        htmlCopy = html.replaceAll("<[^>]*>", "");
+        htmlCopy = htmlCopy.replaceAll("\\W", " ");
+        htmlCopy = htmlCopy.replaceAll("[\\d]", "");
+        htmlCopy = htmlCopy.replaceAll("\\s+", " ");
+        it= Arrays.asList(htmlCopy.split(" ")).iterator();
+        //System.out.println(htmlCopy);
+        return it;
     }
 }

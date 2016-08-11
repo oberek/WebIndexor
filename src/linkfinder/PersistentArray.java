@@ -7,7 +7,7 @@ import java.io.RandomAccessFile;
 
 public class PersistentArray {
     private static RandomAccessFile file = null;
-    
+    private static int arraySize;
     public PersistentArray(String arrayFileName){
         try {
             file = new RandomAccessFile(arrayFileName, "rws");
@@ -17,7 +17,7 @@ public class PersistentArray {
     }
     
     public static void initialize(String arrayFileName, int arraySize, long initialValue) throws IOException{
-        //Wait how does this work again?
+        PersistentArray.arraySize = arraySize;
         file = new RandomAccessFile(arrayFileName, "rws");
         
         for(int i = 0; i < arraySize; i++){
@@ -27,19 +27,18 @@ public class PersistentArray {
                 System.err.println(ex);
             }
         }
-       
-        
+        file.close();
     }
     
     public void set(int index, long value) throws IOException{
-        file.seek(0);
         file.seek(index*8);
         file.writeLong(value);
     }
     public long get(int index) throws IOException{
-        file.seek(0);
-        file.seek(index*8);
+        
+        file.seek(index * 8);
         return file.readLong();
+        
         
     }
     public long getLength() throws IOException{
@@ -48,9 +47,10 @@ public class PersistentArray {
     public void close() throws IOException{
         file.close();
     }
-    public static void delete(String arrayFileName){
+    public static boolean delete(String arrayFileName){
         File newFile = new File(arrayFileName);
         newFile.delete();
+        return true;
     }
     
 }
